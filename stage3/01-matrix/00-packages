@@ -1,0 +1,9 @@
+nginx
+python3-certbot-nginx
+python3-pip python3-certbot-nginx libffi-dev sqlite3 libssl-dev libjpeg-dev libxslt1-dev libsodium-dev libopenjp2-7
+coturn
+postgresql
+postgresql-contrib
+libpq-dev
+jq
+dnsutils

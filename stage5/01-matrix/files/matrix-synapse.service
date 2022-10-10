@@ -1,0 +1,15 @@
+[Unit]
+Description=Synapse Matrix homeserver
+After=postgresql.service
+
+[Service]
+Type=simple
+User=pi
+Group=pi
+WorkingDirectory=/home/pi
+ExecStart=/home/pi/matrix/synapse/env/bin/python -m synapse.app.homeserver --config-path=/home/pi/matrix/homeserver.yaml
+ExecStop=/home/pi/matrix/synapse/env/bin/synctl stop /home/pi/matrix/homeserver.yaml
+
+[Install]
+WantedBy=multi-user.target
+
