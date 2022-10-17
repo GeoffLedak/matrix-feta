@@ -233,9 +233,9 @@ fi
 
 
 certbot_real_failed() {
-if (whiptail --title "Certbot" --yesno "Certbot failed for some reason.
+if (whiptail --title "Certbot" --yesno "Generating SSL certificate with Certbot failed.
 
-This shouldn't happen if the certbot test was successful.
+Please make sure your dns records and router port forwarding is configured properly.
 " 25 90 --yes-button "Retry" --no-button "Shutdown"); then
 echo "continue"
 use_certbot_for_reals
@@ -250,8 +250,7 @@ fi
 
 use_certbot_for_reals() {
 
-# REMOVE TEST PARAM FROM THIS!!!
-if certbot --nginx -d ${SERVER_DOMAIN} -d element.${SERVER_DOMAIN} -d matrix.${SERVER_DOMAIN} --non-interactive --agree-tos -m ${USER_EMAIL} --test-cert; then
+if certbot --nginx -d ${SERVER_DOMAIN} -d element.${SERVER_DOMAIN} -d matrix.${SERVER_DOMAIN} --non-interactive --agree-tos -m ${USER_EMAIL}; then
   pre_install_message
 else
   certbot_real_failed
@@ -260,57 +259,13 @@ fi
 }
 
 
+show_certbot_explanation() {
 
-certbot_test_success() {
-if (whiptail --title "Certbot" --yesno "Certbot test was successful!
+if (whiptail --title "Info" --yesno "Certbot will be used to generate an SSL certificate for ${SERVER_DOMAIN}, matrix.${SERVER_DOMAIN}, and element.${SERVER_DOMAIN}
 
-Next we will generate the actual SSL certifiates with Certbot
 " 25 90 --yes-button "Continue" --no-button "Shutdown"); then
 echo "continue"
 use_certbot_for_reals
-else
-echo "shutdown"
-sudo shutdown now
-exit 1
-fi
-}
-
-certbot_test_failed() {
-if (whiptail --title "Certbot" --yesno "Certbot test failed.
-" 25 90 --yes-button "Retry" --no-button "Shutdown"); then
-echo "continue"
-test_certbot
-else
-echo "shutdown"
-sudo shutdown now
-exit 1
-fi
-}
-
-
-
-test_certbot() {
-
-if certbot certonly --nginx -d ${SERVER_DOMAIN} -d element.${SERVER_DOMAIN} -d matrix.${SERVER_DOMAIN} --non-interactive --agree-tos -m ${USER_EMAIL} --test-cert; then
-  certbot_test_success
-else
-  certbot_test_failed
-fi
-
-}
-
-
-
-
-show_certbot_test_explanation() {
-
-
-if (whiptail --title "Info" --yesno "Certbot will be used to generate SSL certificates for ${SERVER_DOMAIN}, matrix.${SERVER_DOMAIN}, and element.${SERVER_DOMAIN}
-
-First a test will be performed to make sure that SSL certificates can be properly generated.
-" 25 90 --yes-button "Continue" --no-button "Shutdown"); then
-echo "continue"
-test_certbot
 else
 echo "shutdown"
 sudo shutdown now
@@ -375,7 +330,7 @@ server {
 EOL
 
 
-show_certbot_test_explanation
+show_certbot_explanation
 
 }
 
