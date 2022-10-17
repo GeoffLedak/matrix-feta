@@ -115,7 +115,7 @@ echo 72
 sed -i '/^ *database: */{n;/^ *name: */d}' homeserver.yaml 2>> error.txt 1>> /dev/null
 sed -i '/^ *database: */{n;/^ *args: */d}' homeserver.yaml 2>> error.txt 1>> /dev/null
 sed -i '/^ *database: */{n;/^ *database: */d}' homeserver.yaml 2>> error.txt 1>> /dev/null
-sed -i 's/^ *database: */database:\n\n  name: psycopg2\n  txn_limit: 10000\n  args:\n    user: matrix\n    password: '"${DATABASE_PASSWORD}"'\n    database: synapse\n    host: localhost\n    port: 5433\n    cp_min: 5\n    cp_max: 10/' homeserver.yaml 2>> error.txt 1>> /dev/null
+sed -i 's/^ *database: */database:\n\n  name: psycopg2\n  txn_limit: 10000\n  args:\n    user: matrix\n    password: '"${DATABASE_PASSWORD}"'\n    database: synapse\n    host: localhost\n    port: 5432\n    cp_min: 5\n    cp_max: 10/' homeserver.yaml 2>> error.txt 1>> /dev/null
 
 echo 83
 
@@ -141,6 +141,51 @@ sleep 1
 
 
 } | whiptail --backtitle "Feta v1.0" --gauge "Setting up Feta" 7 80 0
+
+
+
+sed -i '/sudo .\/setup-script.sh/d' /home/pi/.bashrc
+
+# sed -i "/ExecStart=/c\ExecStart=-\/sbin\/agetty -o '-p -- \\\\\\\\u' --noclear %I \$TERM" /lib/systemd/system/getty@.service
+
+rm /home/pi/error.txt
+rm /home/pi/matrix/error.txt
+
+rm /home/pi/configure-postgres.sh
+rm /home/pi/gen-matrix-config.sh
+rm /home/pi/setup-script.sh
+
+
+
+
+
+
+# Create static index.html webpage
+
+cat 2>> error.txt 1> /var/www/${SERVER_DOMAIN}/index.html <<EOL
+<html>
+	<head>
+		<title>Feta Server - ${SERVER_DOMAIN}</title>
+	</head>
+
+	<body>
+		<h3>Congrats! Your server is all set up!</h3>
+
+		<p>visit <a href='https://element.${SERVER_DOMAIN}'>https://element.${SERVER_DOMAIN}</a> to use your self hosted element client and create a new account</p>
+
+		<p>Synapse is running at <a style="font-family:'Courier New'">matrix.${SERVER_DOMAIN}</a><br>
+		To connect to your server from a matrix client, you would enter the server as <a style="font-family:'Courier New'">matrix.${SERVER_DOMAIN}</a></p>
+
+		<p>Your server domain is <a style="font-family:'Courier New'">${SERVER_DOMAIN}</a></p>
+
+		<p>If someone from another server wanted to send a message to a user named foo, they would enter<br>
+		<a style="font-family:'Courier New'">@foo:${SERVER_DOMAIN}</a></p>
+	</body>
+</html>
+EOL
+
+
+
 
 
 
@@ -179,6 +224,7 @@ echo "continue"
 begin_installation
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
 
@@ -195,6 +241,7 @@ echo "continue"
 use_certbot_for_reals
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
 }
@@ -223,6 +270,7 @@ echo "continue"
 use_certbot_for_reals
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
 }
@@ -234,6 +282,7 @@ echo "continue"
 test_certbot
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
 }
@@ -242,7 +291,7 @@ fi
 
 test_certbot() {
 
-if certbot --nginx -d ${SERVER_DOMAIN} -d element.${SERVER_DOMAIN} -d matrix.${SERVER_DOMAIN} --non-interactive --agree-tos -m ${USER_EMAIL} --test-cert; then
+if certbot certonly --nginx -d ${SERVER_DOMAIN} -d element.${SERVER_DOMAIN} -d matrix.${SERVER_DOMAIN} --non-interactive --agree-tos -m ${USER_EMAIL} --test-cert; then
   certbot_test_success
 else
   certbot_test_failed
@@ -264,6 +313,7 @@ echo "continue"
 test_certbot
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
 
@@ -324,6 +374,7 @@ server {
 }
 EOL
 
+
 show_certbot_test_explanation
 
 }
@@ -377,6 +428,7 @@ echo "continue"
 collect_domain_and_password
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
 
@@ -408,6 +460,7 @@ echo "continue"
 domain_record_info_one
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
 
@@ -426,6 +479,7 @@ echo "continue"
 port_forwarding
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
 }
@@ -452,6 +506,7 @@ else
 fi
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
 }
@@ -470,6 +525,7 @@ Please make sure an ethernet cable from your router is connected to your Pi.
 echo "continue"
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
 
@@ -485,6 +541,7 @@ If you don't know what this means, select Continue
 echo "continue"
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
 
@@ -501,5 +558,6 @@ fi
 
 else
 echo "shutdown"
+sudo shutdown now
 exit 1
 fi
