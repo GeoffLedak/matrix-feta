@@ -1,3 +1,22 @@
+# Feta
+
+Feta is built off of pi-gen which is the tool used to generate the original Raspberry Pi OS and Raspberry Pi OS Lite images.
+
+The stage0 - stage2 directories are untouched, other than removing the EXPORT_IMAGE and EXPORT_NOOBS files from stage2 (these files are what caused pi-gen to export the Raspberry Pi OS Lite image).
+
+The original stage3 - stage5 directories have been completely removed, and the existing stage3 - stage5 directories are entirely Feta specific.
+
+- stage3 does nothing other than installing packages required by Feta.
+- stage4 performs some initial installation of Synapse, Bcrypt, and Postgres.
+- stage5 is responsible for configuring everything, installing the setup script, installing Element, and exporting the final Feta image.
+
+Got questions? Head on over to #feta:matrix.org
+
+
+### all contents below this line are part of the original pi-gen readme file
+-----------------------------------------------
+
+
 # pi-gen
 
 Tool used to create Raspberry Pi OS images. (Previously known as Raspbian).
